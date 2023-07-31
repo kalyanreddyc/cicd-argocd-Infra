@@ -1,0 +1,250 @@
+AMI-Image 
+==================
+
+NAME="Red Hat Enterprise Linux"
+VERSION="9.2 (Plow)"
+ID="rhel"
+
+
+
+ssh -i "Linux-test-server.pem" ec2-user@ec2-13-232-205-27.ap-south-1.compute.amazonaws.com
+yum update -y
+more /etc/os-release
+===========================
+Installing Java11
+===========================
+sudo yum search java-11-openjdk
+sudo yum install java-11-openjdk -y 
+java -version
+yum install -y net-tools
+vi .bashrc
+##Setting path in .bashrc file /root/.bashrc ##
+     export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.19.0.7-4.el9.x86_64
+     export PATH=$JAVA_HOME:$PATH
+##Add above line to .bashrc file in the end ##
+source .bashrc
+
+find / -name java -type f -executable
+alternatives --config java
+
+executable locations to java
+OpenJDK: /usr/lib/jvm
+Oracle JDK: /usr/java
+** Errors
+[root@ip-172-31-6-254 bin]# /opt/maven/apache-maven-3.9.2/bin/mvn -version
+The JAVA_HOME environment variable is not defined correctly,
+this environment variable is needed to run this program.
+**Solution** This error is due to the symbolic path as /usr/bin/java is referring to this location /usr/lib/jvm/java-11-openjdk-11.0.19.0.7-4.el9.x86_64 
+
+===================================
+Installing git 
+===================================
+yum install git -y
+
+
+
+=============================
+Installing Maven 
+==============================
+yum install -y wget
+mkdir -p /opt/maven
+cd /opt/maven
+wget https://dlcdn.apache.org/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.tar.gz
+du -sh apache-maven-3.9.2-bin.tar.gz	
+tar -xzf apache-maven-3.9.2-bin.tar.gz
+cd 
+vi .bashrc
+
+##Setting path in .bashrc file /root/.bashrc ##
+		export MAVEN_HOME=/opt/maven/apache-maven-3.9.2
+		export PATH=$MAVEN_HOME/bin:$PATH
+##Add above line to .bashrc file in the end ##
+ 
+source ~/.bashrc
+
+
+
+==============================================================================================
+Installing SonarQube-9.6.1.59531
+==============================================================
+https://devopscube.com/setup-and-configure-sonarqube-on-linux/
+https://www.sonarsource.com/products/sonarqube/downloads/historical-downloads/
+https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.6.1.59531.zip?_gl=1*lewo88*_gcl_au*MTMzNDYwODY1MC4xNjg3MTk5MzEz*_ga*NDQ5Mzk2Njk4LjE2ODcxOTkzMTM.*_ga_9JZ0GZ5TC6*MTY4NzQxODk5MC43LjEuMTY4NzQxOTczMi41NC4wLjA.
+Requirements:
+2 GB RAM, 2 CPU cores, and 10/20 GB of disk space for small-scale installations
+Sonarqube should not be running with root user credentials
+Default port is 9000 
+Default Credentials admin/admin
+
+
+mkdir -p /opt/sonarqube
+cd /opt/sonarqube
+wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.6.1.59531.zip?_gl=1*kyj9w1*_gcl_au*MTMzNDYwODY1MC4xNjg3MTk5MzEz*_ga*NDQ5Mzk2Njk4LjE2ODcxOTkzMTM.*_ga_9JZ0GZ5TC6*MTY4NzI3NDY2Ni40LjEuMTY4NzI3NDk2Ni42MC4wLjA.
+mv sonarqube-9.6.1.59531.zip\?_gl\=1\*kyj9w1\*_gcl_au\*MTMzNDYwODY1MC4xNjg3MTk5MzEz\*_ga\*NDQ5Mzk2Njk4LjE2ODcxOTkzMTM.\*_ga_9JZ0GZ5TC6\*MTY4NzI3NDY2Ni40LjEuMTY4NzI3NDk2Ni42MC4wLjA. sonarqube-9.6.1.zip
+yum install -y unzip
+unzip sonarqube-9.6.1.zip
+mv sonarqube-9.6.1.59531 sonarqube-9.6.1
+sudo vi /etc/systemd/system/sonarqube.service
+sudo systemctl daemon-reload
+sudo systemctl enable sonarqube
+sudo systemctl start sonarqube
+
+
+sudo useradd sonar
+sudo chown -R sonar:sonar /opt/sonarqube
+sudo su - sonar
+/opt/sonarqube/sonarqube-9.6.1/bin/linux-x86-64/sonar.sh start
+/opt/sonarqube/sonarqube-9.6.1/bin/linux-x86-64/sonar.sh status
+
+===============================================================================================
+Running sample maven project
+===============================================================================================
+https://github.com/jitpack/maven-modular
+java -cp target/module1-2.0-SNAPSHOT.jar io.jitpack.App
+
+https://github.com/jabedhasan21/java-hello-world-with-maven
+
+https://github.com/orgs/MithunTechnologiesDevOps/repositories
+
+maven-jenkins-build 
+squ_0e4f586f1940de865aa84e3aad93469dc327ec64
+
+==============================================================
+Sonar-Scanner
+==================================================================
+https://docs.sonarqube.org/latest/analyzing-source-code/scanners/sonarscanner/
+mkdir -p /opt/sonarqube/sonar-scanner/
+cd /opt/sonarqube/sonar-scanner/
+wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+vi .bashrc
+
+##Setting path in .bashrc file /root/.bashrc ##
+	export SONAR_RUNNER_HOME=/opt/sonarqube/sonar-scanner/sonar-scanner-4.8.0.2856-linux
+	export PATH=$SONAR_RUNNER_HOME/bin:$PATH
+##Add above line to .bashrc file in the end ##
+source .bashrc
+NOTE: when you're running sonarqube as sonar user, make sure to update .bashrc file of sonar user as well.
+
+
+====================================================================================================
+Installing Jenkins Using Jenkins WAR file
+================================================================================================
+https://www.jenkins.io/download/
+https://get.jenkins.io/war-stable/
+https://www.jenkins.io/doc/book/installing/war-file/
+Requirements:
+------------------
+Hardware:
+Minimum hardware requirements:
+256 MB of RAM
+1 GB of drive space (although 10 GB is a recommended minimum if running Jenkins as a Docker container)
+Recommended hardware configuration for a small team:
+4 GB+ of RAM
+50 GB+ of drive space
+Software
+----------------------------------
+Jenkins requires Java 11 or 17 since Jenkins 2.357 and LTS 2.361.1.
+
+Installation: 2.375.2 - https://get.jenkins.io/war-stable/2.375.2/
+
+Commands:
+mkdir -p /opt/jenkins
+cd /opt/jenkins
+wget https://get.jenkins.io/war-stable/2.375.2/jenkins.war
+java -jar jenkins.war
+password: /root/.jenkins/secrets/initialAdminPassword
+##copy the password from above path and open the browser and try to access jenkins using ec2-instance public ip or public DNS followed by port like http://13.235.2.136:8080/
+
+vi /etc/systemd/systemctl/jenkins.service
+sudo systemctl daemon-reload
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+
+
+
+
+
+
+
+
+
+########################################################
+Setting up PATH
+########################################################
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.19.0.7-4.el9.x86_64
+export PATH=$JAVA_HOME:$PATH
+export MAVEN_HOME=/opt/maven/apache-maven-3.9.2
+export PATH=$MAVEN_HOME/bin:$PATH
+export SONAR_RUNNER_HOME=/opt/sonarqube/sonar-scanner/sonar-scanner-4.8.0.2856-linux
+export PATH=$SONAR_RUNNER_HOME/bin:$PATH
+
+
+
+
+################################################################
+Jenkins integration with Sonarqube
+################################################################
+https://docs.sonarqube.org/9.8/analyzing-source-code/scanners/jenkins-extension-sonarqube/#maven-or-gradle
+Plugin Name: https://plugins.jenkins.io/sonar/
+-->Configure your SonarQube server(s): Log into Jenkins as an administrator and go to Manage Jenkins > Configure System.
+-->Scroll down to the SonarQube configuration section, click Add SonarQube, and add the values you're prompted for.
+--> The server authentication token should be created as a Secret Text credential.
+--> Analyzing a Java project with Maven or Gradle
+   -->Log into Jenkins as an administrator and go to Manage Jenkins > Configure System
+   -->Scroll to the SonarQube servers section and check Enable injection of SonarQube server configuration as build environment variables
+--> mvn clean sonar:sonar
+
+
+
+##############################################################
+Installing Nexus on Redhat Linux
+#################################################################
+https://help.sonatype.com/repomanager3/installation-and-upgrades/installation-methods
+https://help.sonatype.com/repomanager3/product-information/download/download-archives---repository-manager-3
+https://help.sonatype.com/repomanager3/installation-and-upgrades/directories
+Java should be java 1.8
+##Installing java 1.8
+sudo yum search java-1.8.0-openjdk
+yum install java-1.8.0-openjdk -y
+yum install -y net-tools
+**update .bashrc in root  
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-2.el9.x86_64
+export PATH=$JAVA_HOME:$PATH
+export INSTALL4J_JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-2.el9.x86_64
+export PATH=$INSTALL4J_JAVA_HOME:$PATH
+**
+
+sudo vi /etc/systemd/system/nexus.service
+sudo systemctl daemon-reload
+sudo systemctl enable nexus
+sudo systemctl start nexus
+
+
+
+
+
+
+mkdir -p /opt/nexus
+cd /opt/nexus
+yum install wget -y
+wget https://download.sonatype.com/nexus/3/nexus-3.50.0-01-unix.tar.gz
+tar -xzf nexus-3.50.0-01-unix.tar.gz /opt/nexus/
+sudo useradd nexus
+
+**update .bashrc in nexus  
+export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-2.el9.x86_64
+export PATH=$JAVA_HOME:$PATH
+export INSTALL4J_JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-2.el9.x86_64
+export PATH=$INSTALL4J_JAVA_HOME:$PATH
+**
+
+sudo chown -R nexus:nexus /opt/nexus
+sudo su - nexus
+/opt/nexus/nexus-package/nexus-3.50.0-01/bin/nexus start
+sudo su - nexus -c "/opt/nexus/nexus-3.50.0-01/bin/nexus start"
+sudo su - nexus -c "/opt/nexus/nexus-3.50.0-01/bin/nexus status"
+
+sudo echo 'export INSTALL4J_JAVA_HOME="/usr/lib/jvm/java-11-openjdk-11.0.19.0.7-4.el9.x86_64"' >> /home/ec2-user/.bashrc
+sudo echo 'export PATH="$INSTALL4J_JAVA_HOME:$PATH"' >> /home/ec2-user/.bashrc
+

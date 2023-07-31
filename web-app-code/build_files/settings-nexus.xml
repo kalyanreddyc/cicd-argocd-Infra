@@ -1,0 +1,65 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+  <!--localRepository>/home/jenkins/.m2/</localRepository-->
+
+  <mirrors>
+    <mirror>
+      <!--This sends everything else to /public -->
+      <id>nexus</id>
+      <mirrorOf>*</mirrorOf>
+      <url>http://3.6.38.63:8081/repository/maven-central/</url>
+    </mirror>
+  </mirrors>
+
+
+  <profiles>
+    <profile>
+      <id>sonar</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <sonar.host.url>http://3.110.154.30:9000/</sonar.host.url>
+        <sonar.login>squ_0e4f586f1940de865aa84e3aad93469dc327ec64</sonar.login>
+      </properties>
+    </profile>
+    <profile>
+      <id>nexus</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>nexus</id>
+          <name>Nexus</name>
+          <url>http://3.6.38.63:8081/repository/maven-public/</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+  </profiles>
+
+  <servers>
+    <server>
+      <id>nexus</id>
+      <username>admin</username>
+      <password>admin@123</password>
+    </server>
+  </servers>
+
+        <!--repositories>
+            <repository>
+              <id>nexus</id>
+              <name>Releases Nexus Repository</name>
+              <url>http://3.6.38.63:8081/repository/maven-releases/</url>
+            </repository>
+
+            <snapshotRepository>
+              <id>nexus</id>
+              <name>Snapshot Nexus Repository </name>
+              <url>http://3.6.38.63:8081/repository/maven-snapshots/</url>
+            </snapshotRepository>
+         </repositories-->
+
+
+</settings>
